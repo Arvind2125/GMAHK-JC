@@ -1,0 +1,22 @@
+services:
+  onlyoffice-documentserver:
+    image: onlyoffice/documentserver:latest
+    container_name: gmahk-onlyoffice-documentserver
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      JWT_ENABLED: "false"
+      ALLOW_PRIVATE_IP_ADDRESS: "true"
+      ALLOW_META_IP_ADDRESS: "true"
+    volumes:
+      - onlyoffice_data:/var/www/onlyoffice/Data
+      - onlyoffice_log:/var/log/onlyoffice
+      - onlyoffice_lib:/var/lib/onlyoffice
+      - onlyoffice_db:/var/lib/postgresql
+
+volumes:
+  onlyoffice_data:
+  onlyoffice_log:
+  onlyoffice_lib:
+  onlyoffice_db:

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnlyOffice Debug</title>
+    <style>
+        html, body { margin: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background: #0f172a; color: #e2e8f0; }
+        #editor { width: 100vw; height: 100vh; }
+        #status {
+            position: fixed;
+            left: 12px;
+            top: 12px;
+            z-index: 9999;
+            max-width: 720px;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 8px;
+            padding: 12px 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="status">Memulai debug...</div>
+    <div id="editor"></div>
+    <script>
+        const statusEl = document.getElementById('status');
+        const reportId = new URLSearchParams(location.search).get('reportId') || '35';
+        const log = (...args) => {
+            const text = args.map(item => typeof item === 'string' ? item : JSON.stringify(item, null, 2)).join(' ');
+            console.log('[OO-DEBUG]', ...args);
+            statusEl.textContent = text;
+        };
+
+        window.addEventListener('error', (event) => {
+            console.error('[OO-DEBUG][window-error]', event.message, event.filename, event.lineno, event.colno);
+        }, true);
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('[OO-DEBUG][promise]', event.reason);
+        });
+
+        async function start() {
+            log('Mengambil config report', reportId);
+            const res = await fetch(`/api/onlyoffice/report/${encodeURIComponent(reportId)}/config`, {
+                credentials: 'same-origin',
+                cache: 'no-store'
+            });
+            const config = await res.json();
+            console.log('[OO-DEBUG][config]', config);
+            log('Config diterima. Memuat script:', config.scriptUrl);
+
+            await new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = config.scriptUrl;
+                s.onload = resolve;
+                s.onerror = () => reject(new Error('Gagal memuat api.js'));
+                document.head.appendChild(s);
+            });
+
+            if (!window.DocsAPI) {
+                throw new Error('DocsAPI tidak tersedia setelah api.js dimuat');
+            }
+
+            log('DocsAPI siap. Membuka editor...');
+            new DocsAPI.DocEditor('editor', config);
+            log('Editor diinisialisasi. Lihat console/network untuk detail jika gagal.');
+        }
+
+        start().catch((error) => {
+            log('Gagal:', error.message || String(error));
+            console.error('[OO-DEBUG][fatal]', error);
+        });
+    </script>
+</body>
+</html>

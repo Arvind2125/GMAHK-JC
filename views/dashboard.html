@@ -1,0 +1,2450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMAHK Jakarta Conference — Sistem Keuangan</title>
+    <meta name="description" content="Sistem informasi keuangan dan audit jemaat GMAHK Jakarta Conference">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #0a0d14;
+            --bg-card: #111827;
+            --bg-card2: #161d2e;
+            --bg-hover: #1e2a3a;
+            --border: #1e2d45;
+            --border-light: #243447;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --accent-glow: rgba(59,130,246,0.15);
+            --emerald: #10b981;
+            --rose: #f43f5e;
+            --amber: #f59e0b;
+            --purple: #8b5cf6;
+            --text-primary: #f0f6ff;
+            --text-secondary: #94a3b8;
+            --text-muted: #4a5568;
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --sheet-bg: #f3f4f6;
+            --sheet-surface: #ffffff;
+            --sheet-border: #d0d7de;
+            --sheet-header: #f8fafc;
+            --sheet-header-strong: #e8edf3;
+            --sheet-text: #111827;
+            --sheet-muted: #6b7280;
+            --sheet-select: #2563eb;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        /* ====== SCROLLBAR ====== */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* ====== SIDEBAR ====== */
+        #sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 50;
+        }
+
+        .sidebar-logo {
+            padding: 20px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #1e40af, #7c3aed);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 0 20px rgba(59,130,246,0.3);
+            flex-shrink: 0;
+        }
+
+        .logo-text h1 { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+        .logo-text p { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+        .sidebar-nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+
+        .nav-label {
+            font-size: 9px; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1.2px;
+            padding: 8px 10px 6px;
+        }
+
+        .nav-btn {
+            width: 100%; display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px;
+            background: none; border: none; color: var(--text-secondary);
+            cursor: pointer; transition: all 0.2s; text-align: left;
+            font-size: 13px; font-weight: 500; font-family: 'Inter', sans-serif;
+            margin-bottom: 2px;
+        }
+        .nav-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .nav-btn.active {
+            background: var(--accent-glow);
+            color: var(--accent-light);
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+        .nav-btn i { width: 18px; text-align: center; font-size: 13px; }
+
+        .sidebar-footer {
+            padding: 14px 18px;
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #1e40af, #7c3aed);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; flex-shrink: 0;
+        }
+        .user-info p:first-child { font-size: 12px; font-weight: 600; }
+        .user-info p:last-child { font-size: 10px; color: var(--emerald); display: flex; align-items: center; gap: 4px; }
+        .online-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); display: inline-block; }
+
+        /* ====== MAIN CONTENT ====== */
+        #main-content {
+            flex: 1; height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* ====== HEADER ====== */
+        .topbar {
+            background: rgba(10,13,20,0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0; z-index: 40;
+        }
+
+        #pageTitle { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+
+        .topbar-actions { display: flex; gap: 8px; }
+
+        .btn { 
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px; border-radius: var(--radius-sm);
+            border: none; cursor: pointer; font-family: 'Inter', sans-serif;
+            font-size: 12px; font-weight: 600; transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-ghost { background: var(--bg-card2); color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: #2563eb; box-shadow: 0 0 16px var(--accent-glow); }
+        .btn-success { background: var(--emerald); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: var(--rose); color: white; }
+        .btn-danger:hover { background: #e11d48; }
+        .btn-purple { background: var(--purple); color: white; }
+        .btn-purple:hover { background: #7c3aed; }
+        .btn-sm { padding: 5px 10px; font-size: 11px; }
+
+        /* ====== TAB PAGES ====== */
+        .tab-page { display: none; height: calc(100vh - 57px); overflow-y: auto; padding: 20px 24px; }
+        .tab-page.active { display: block; }
+
+        /* ====== KEUANGAN TAB: 2-COLUMN LAYOUT ====== */
+        .keuangan-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 16px;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* ====== LEFT PANEL (FILTER + UPLOAD) ====== */
+        .left-panel { display: flex; flex-direction: column; gap: 12px; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .card-title {
+            font-size: 11px; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+        }
+
+        /* SEARCH BAR */
+        .search-bar {
+            position: relative;
+        }
+        .search-bar input {
+            width: 100%; padding: 9px 12px 9px 34px;
+            background: var(--bg-card2); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); color: var(--text-primary);
+            font-family: 'Inter', sans-serif; font-size: 12px;
+            outline: none; transition: border-color 0.2s;
+        }
+        .search-bar input:focus { border-color: var(--accent); }
+        .search-bar input::placeholder { color: var(--text-muted); }
+        .search-bar .search-icon {
+            position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 12px;
+        }
+
+        /* FILTER CHIPS */
+        .chip-container { display: flex; flex-wrap: wrap; gap: 6px; max-height: 120px; overflow-y: auto; }
+        .chip {
+            padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+            cursor: pointer; border: 1px solid var(--border); background: var(--bg-card2);
+            color: var(--text-secondary); transition: all 0.2s; white-space: nowrap;
+        }
+        .chip:hover { border-color: var(--accent); color: var(--accent-light); }
+        .chip.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent-light); }
+        .chip-clear {
+            padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+            cursor: pointer; border: 1px solid rgba(244,63,94,0.3); background: rgba(244,63,94,0.08);
+            color: var(--rose); transition: all 0.2s;
+        }
+        .chip-clear:hover { background: rgba(244,63,94,0.15); }
+
+        /* UPLOAD FORM */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-card2);
+        }
+        .upload-zone:hover { border-color: var(--accent); background: var(--accent-glow); }
+        .upload-zone.dragover { border-color: var(--accent); background: var(--accent-glow); }
+        .upload-zone i { font-size: 22px; color: var(--text-muted); margin-bottom: 6px; display: block; }
+        .upload-zone span { font-size: 11px; color: var(--text-muted); }
+        .upload-zone .file-chosen { font-size: 11px; color: var(--accent-light); font-weight: 600; }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-input, .form-select {
+            width: 100%; padding: 8px 10px;
+            background: var(--bg-card2); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); color: var(--text-primary);
+            font-family: 'Inter', sans-serif; font-size: 12px;
+            outline: none; transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-select:focus { border-color: var(--accent); }
+        .form-input::placeholder { color: var(--text-muted); }
+        .form-select option { background: var(--bg-card); }
+
+        /* ====== RIGHT PANEL ====== */
+        .right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+        /* STATS ROW */
+        .stats-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+        }
+        .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+        .stat-value { font-size: 20px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+        .stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+        .stat-card.emerald { border-color: rgba(16,185,129,0.2); background: linear-gradient(135deg, rgba(16,185,129,0.05), var(--bg-card)); }
+        .stat-card.emerald .stat-value { color: var(--emerald); }
+        .stat-card.rose { border-color: rgba(244,63,94,0.2); background: linear-gradient(135deg, rgba(244,63,94,0.05), var(--bg-card)); }
+        .stat-card.rose .stat-value { color: var(--rose); }
+        .stat-card.blue .stat-value { color: var(--accent-light); }
+
+        /* FILE LIST */
+        .file-grid { display: flex; flex-direction: column; gap: 14px; }
+
+        .folder-group {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: linear-gradient(180deg, rgba(17,24,39,0.95), rgba(22,29,46,0.95));
+            overflow: hidden;
+        }
+        .folder-group-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.02);
+        }
+        .folder-group-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .folder-group-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(59,130,246,0.12);
+            color: var(--accent-light);
+            border: 1px solid rgba(59,130,246,0.25);
+            flex-shrink: 0;
+        }
+        .folder-group-meta h4 {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+        .folder-group-meta p {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+        .folder-group-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .folder-stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+        .folder-years {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 14px;
+        }
+        .year-group {
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            overflow: hidden;
+        }
+        .year-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .year-group-header h5 {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .year-group-header span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .year-group-files {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px;
+        }
+
+        .file-card {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            display: flex; align-items: center; gap: 14px;
+            transition: all 0.2s; cursor: pointer;
+        }
+        .file-card:hover { border-color: var(--accent); background: var(--bg-hover); }
+        .file-card.active-file { border-color: var(--accent); background: var(--accent-glow); }
+
+        .file-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+            background: rgba(16,185,129,0.1); color: var(--emerald);
+        }
+
+        .file-info { flex: 1; min-width: 0; }
+        .file-name { font-size: 13px; font-weight: 600; color: var(--text-primary); truncate: ellipsis; white-space: nowrap; overflow: hidden; }
+        .file-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .file-meta span { display: flex; align-items: center; gap: 4px; }
+
+        .file-badge {
+            padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 600;
+            flex-shrink: 0;
+        }
+        .badge-balance { background: rgba(16,185,129,0.1); color: var(--emerald); border: 1px solid rgba(16,185,129,0.2); }
+        .badge-selisih { background: rgba(244,63,94,0.1); color: var(--rose); border: 1px solid rgba(244,63,94,0.2); }
+        .badge-proses { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+
+        .file-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center; padding: 48px 20px;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .empty-state .empty-icon {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: var(--bg-card2); display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: var(--text-muted);
+        }
+        .empty-state h4 { font-size: 14px; color: var(--text-secondary); }
+        .empty-state p { font-size: 12px; color: var(--text-muted); max-width: 200px; }
+
+        /* ====== SPREADSHEET VIEWER MODAL / SECTION ====== */
+        #spreadsheetModal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+        #spreadsheetModal.open { display: flex; }
+
+        .sheet-topbar {
+            background: #eef2f7;
+            border-bottom: 1px solid var(--sheet-border);
+            padding: 10px 16px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0; gap: 12px; flex-wrap: wrap;
+        }
+
+        .sheet-title-area { display: flex; align-items: center; gap: 10px; }
+        .sheet-title-area h3 { font-size: 14px; font-weight: 700; color: var(--sheet-text); }
+        .sheet-title-area .sheet-subtitle { font-size: 11px; color: var(--sheet-muted); }
+
+        .sheet-action-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .sheet-body {
+            display: flex; flex: 1; overflow: hidden;
+        }
+
+        /* AUDIT SIDEBAR (RIGHT) */
+        .audit-sidebar {
+            width: 300px; min-width: 300px;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        .audit-sidebar-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .audit-sidebar-header h4 { font-size: 12px; font-weight: 700; }
+
+        .audit-sidebar-content { flex: 1; overflow-y: auto; padding: 12px; }
+
+        .audit-placeholder {
+            text-align: center; padding: 32px 16px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .audit-placeholder .audit-icon {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: var(--purple);
+        }
+        .audit-placeholder h5 { font-size: 12px; color: var(--text-secondary); }
+        .audit-placeholder p { font-size: 11px; color: var(--text-muted); }
+
+        /* SCORE CIRCLE */
+        .score-circle {
+            width: 64px; height: 64px; border-radius: 50%;
+            border: 4px solid var(--accent); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* FINDING CARD */
+        .finding-card {
+            padding: 10px; border-radius: var(--radius-sm);
+            margin-bottom: 8px; border: 1px solid;
+        }
+        .finding-card.danger { border-color: rgba(244,63,94,0.25); background: rgba(244,63,94,0.05); }
+        .finding-card.warning { border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.05); }
+        .finding-card.info { border-color: rgba(59,130,246,0.25); background: rgba(59,130,246,0.05); }
+        .finding-title { font-size: 11px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .finding-msg { font-size: 10px; color: var(--text-secondary); line-height: 1.5; }
+        .finding-rec { font-size: 10px; color: var(--text-muted); margin-top: 5px; padding: 5px 8px; background: rgba(255,255,255,0.03); border-radius: 4px; border-left: 2px solid var(--border); line-height: 1.4; }
+
+        /* ====== SPREADSHEET GRID ====== */
+        .sheet-main {
+            flex: 1; display: flex; flex-direction: column; overflow: hidden;
+            background: var(--sheet-bg);
+        }
+
+        /* SHEET TABS BAR */
+        .sheet-tabs-bar {
+            display: flex; align-items: stretch;
+            background: #eef2f7;
+            border-top: 1px solid var(--sheet-border);
+            flex-shrink: 0; overflow-x: auto;
+            height: 36px;
+        }
+        .sheet-tab {
+            padding: 0 16px; display: flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap;
+            border-right: 1px solid var(--sheet-border);
+            color: var(--sheet-muted); background: #e5e7eb;
+            transition: all 0.15s; border-bottom: 2px solid transparent;
+            user-select: none;
+        }
+        .sheet-tab:hover { color: var(--sheet-text); background: #f9fafb; }
+        .sheet-tab.active {
+            color: #0f172a; background: var(--sheet-surface);
+            border-bottom: 2px solid var(--sheet-select);
+        }
+
+        /* CELL REFERENCE & FORMULA BAR */
+        .formula-bar {
+            background: #eef2f7;
+            border-bottom: 1px solid var(--sheet-border);
+            display: flex; align-items: center; padding: 5px 12px; gap: 10px;
+            flex-shrink: 0; height: 32px;
+        }
+        .cell-ref {
+            font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            color: var(--sheet-muted); min-width: 60px;
+            padding: 2px 8px; background: var(--sheet-surface);
+            border: 1px solid var(--sheet-border); border-radius: 4px;
+        }
+        .formula-input {
+            flex: 1; background: var(--sheet-surface); border: 1px solid var(--sheet-border); outline: none;
+            color: var(--sheet-text); font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+        .formula-input:focus { border-color: var(--sheet-select); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+
+        .sheet-toolbar {
+            background: #f8fafc;
+            border-bottom: 1px solid var(--sheet-border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            flex-wrap: wrap;
+        }
+        .tool-btn, .tool-select, .tool-color {
+            height: 28px;
+            border: 1px solid var(--sheet-border);
+            background: var(--sheet-surface);
+            color: var(--sheet-text);
+            border-radius: 4px;
+            font: 600 11px Inter, sans-serif;
+        }
+        .tool-btn {
+            min-width: 30px;
+            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .tool-btn:hover { border-color: var(--sheet-select); color: var(--sheet-select); }
+        .tool-select { padding: 0 6px; }
+        .tool-color { width: 34px; padding: 2px; cursor: pointer; }
+        .tool-separator {
+            width: 1px;
+            height: 22px;
+            background: var(--sheet-border);
+            margin: 0 3px;
+        }
+
+        /* GRID CONTAINER */
+        .grid-container {
+            flex: 1; overflow: auto; position: relative; background: var(--sheet-bg); padding: 16px;
+        }
+
+        .excel-table {
+            border-collapse: collapse;
+            font-family: 'Calibri', 'Inter', sans-serif;
+            font-size: 12px;
+            position: relative;
+            background: var(--sheet-surface);
+            box-shadow: 0 12px 32px rgba(15,23,42,0.08);
+        }
+
+        /* ROW NUMBER COLUMN */
+        .excel-table .row-num {
+            background: var(--sheet-header);
+            border: 1px solid var(--sheet-border);
+            color: var(--sheet-muted);
+            text-align: center;
+            font-size: 11px;
+            width: 48px; min-width: 48px;
+            position: sticky; left: 0; z-index: 3;
+            user-select: none; padding: 3px 4px;
+        }
+
+        /* COLUMN HEADER */
+        .excel-table .col-header {
+            background: var(--sheet-header);
+            border: 1px solid var(--sheet-border);
+            color: var(--sheet-muted);
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            position: sticky; top: 0; z-index: 4;
+            user-select: none;
+            padding: 4px 6px;
+        }
+        /* Corner cell (top-left) */
+        .excel-table .col-header.corner {
+            position: sticky; top: 0; left: 0; z-index: 5;
+            width: 48px; min-width: 48px;
+        }
+
+        /* DATA CELLS */
+        .excel-table td.data-cell {
+            border: 1px solid var(--sheet-border);
+            padding: 4px 6px;
+            min-width: 80px; max-width: 300px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--sheet-text);
+            vertical-align: top;
+            position: relative;
+            cursor: default;
+            background: var(--sheet-surface);
+        }
+        .excel-table td.data-cell:hover { background: #f8fbff !important; }
+        .excel-table td.data-cell.selected {
+            background: rgba(37,99,235,0.08) !important;
+            outline: 2px solid var(--sheet-select) !important;
+            outline-offset: -1px;
+        }
+        .excel-table td.data-cell.editing { padding: 0 !important; }
+        .excel-table td.data-cell input.cell-editor {
+            width: 100%; height: 100%; min-height: 22px;
+            padding: 3px 6px;
+            background: #ffffff;
+            border: 2px solid var(--sheet-select);
+            color: var(--sheet-text);
+            font-family: 'Calibri', 'Inter', sans-serif;
+            font-size: 12px; outline: none;
+        }
+        .excel-table tr:hover .data-cell { background: #fbfdff; }
+        .excel-table tr:nth-child(even) .data-cell { background: #ffffff; }
+
+        /* LOADING */
+        .loading-overlay {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(243,244,246,0.85); backdrop-filter: blur(4px); z-index: 10;
+        }
+        .spinner {
+            width: 36px; height: 36px; border: 3px solid var(--border);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* TOAST */
+        #toast-container {
+            position: fixed; bottom: 20px; right: 20px;
+            display: flex; flex-direction: column; gap: 8px; z-index: 9999;
+        }
+        .toast {
+            padding: 10px 16px; border-radius: var(--radius-sm);
+            font-size: 12px; font-weight: 500; min-width: 240px;
+            display: flex; align-items: center; gap: 8px;
+            animation: slideIn 0.25s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast.success { background: #064e3b; border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+        .toast.error { background: #4c0519; border: 1px solid rgba(244,63,94,0.3); color: #fda4af; }
+        .toast.info { background: #1e3a5f; border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; }
+
+        /* PLACEHOLDER TABS */
+        .placeholder-tab {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 300px;
+        }
+        .placeholder-inner { text-align: center; }
+        .placeholder-inner .big-icon { font-size: 48px; color: var(--text-muted); margin-bottom: 16px; }
+        .placeholder-inner h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .placeholder-inner p { font-size: 13px; color: var(--text-muted); max-width: 340px; margin: 0 auto; }
+
+        /* MISC */
+        .divider { height: 1px; background: var(--border); margin: 10px 0; }
+        .tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600;
+        }
+        .tag-jemaat { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+        .tag-tahun { background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+        
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .sheet-neraca-footer {
+            background: #eef2f7; border-top: 1px solid var(--sheet-border);
+            padding: 8px 16px; display: flex; gap: 24px; flex-shrink: 0;
+            align-items: center; font-size: 11px; flex-wrap: wrap;
+        }
+        .neraca-item { display: flex; gap: 6px; align-items: center; }
+        .neraca-label { color: var(--sheet-muted); }
+        .neraca-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+
+        /* DB mode editor (table edit) */
+        .db-editor-table { width: 100%; border-collapse: collapse; background: var(--sheet-surface); }
+        .db-editor-table th {
+            background: var(--sheet-header); border: 1px solid var(--sheet-border);
+            padding: 8px 10px; font-size: 10px; font-weight: 700;
+            color: var(--sheet-muted); text-transform: uppercase; letter-spacing: 0.8px;
+            position: sticky; top: 0; z-index: 2;
+        }
+        .db-editor-table td { border: 1px solid var(--sheet-border); padding: 1px; background: var(--sheet-surface); }
+        .db-editor-table input {
+            width: 100%; padding: 6px 8px; background: transparent;
+            border: 2px solid transparent; color: var(--sheet-text);
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; outline: none;
+            transition: border-color 0.15s;
+        }
+        .db-editor-table input:focus { background: #f8fbff; border-color: var(--sheet-select); }
+        .db-editor-table tr:hover td { background: #fbfdff; }
+
+        #upload-progress { 
+            display: none; height: 4px; background: var(--bg-card2); border-radius: 2px; margin-top: 8px; overflow: hidden;
+        }
+        #upload-progress .progress-bar {
+            height: 100%; width: 0%; background: var(--accent);
+            transition: width 0.3s; border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon"><i class="fa-solid fa-church"></i></div>
+        <div class="logo-text">
+            <h1>GMAHK Jakarta</h1>
+            <p>Conference System</p>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <p class="nav-label">Menu Utama</p>
+        <button class="nav-btn active" id="btn-keuangan" onclick="switchTab('keuangan')">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Keuangan &amp; Audit</span>
+        </button>
+        <button class="nav-btn" id="btn-aset" onclick="switchTab('aset')">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            <span>Manajemen Aset</span>
+        </button>
+        <button class="nav-btn" id="btn-pendeta" onclick="switchTab('pendeta')">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>Wilayah Pendeta</span>
+        </button>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-avatar">A</div>
+        <div class="user-info">
+            <p>Admin User</p>
+            <p><span class="online-dot"></span> Online</p>
+        </div>
+    </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div id="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <h2 id="pageTitle">Modul Keuangan &amp; Audit</h2>
+        <div class="topbar-actions">
+            <button class="btn btn-ghost" onclick="refreshAllData()">
+                <i class="fa-solid fa-arrows-rotate"></i> Refresh
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== TAB: KEUANGAN ===== -->
+    <div id="tab-keuangan" class="tab-page active">
+        <div class="keuangan-layout">
+
+            <!-- LEFT PANEL -->
+            <div class="left-panel">
+
+                <!-- SEARCH BAR -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-magnifying-glass"></i> Cari Berkas</div>
+                    <div class="search-bar">
+                        <i class="fa-solid fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Cari nama jemaat, file, tahun..." oninput="handleSearch(this.value)">
+                    </div>
+                </div>
+
+                <!-- FILTER JEMAAT -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-church"></i> Filter Jemaat</div>
+                    <div class="chip-container" id="jemaatChips">
+                        <div class="chip" style="color:var(--text-muted);">Memuat...</div>
+                    </div>
+                </div>
+
+                <!-- FILTER TAHUN -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-calendar"></i> Periode Tahun</div>
+                    <div class="form-group" style="margin-bottom:12px">
+                        <label>Pilih Periode Tahun</label>
+                        <select id="yearSelect" class="form-select" onchange="handleYearSelect(this.value)">
+                            <option value="">Semua periode tahun</option>
+                        </select>
+                    </div>
+                    <div class="chip-container" id="yearChips">
+                        <div class="chip" style="color:var(--text-muted);">Memuat...</div>
+                    </div>
+                </div>
+
+                <!-- UPLOAD FORM -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-file-arrow-up"></i> Upload Berkas</div>
+                    <form id="uploadForm" onsubmit="handleUpload(event)">
+                        <div class="form-group">
+                            <label>File Excel (.xlsx/.xls)</label>
+                            <label class="upload-zone" id="uploadZone">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span id="uploadFileName">Klik atau seret file ke sini</span>
+                                <input type="file" id="excelFile" accept=".xlsx,.xls" class="hidden" style="display:none" required onchange="handleFileSelect(this)">
+                            </label>
+                            <div id="upload-progress"><div class="progress-bar" id="progressBar"></div></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nama Jemaat</label>
+                            <input type="text" id="namaJemaat" class="form-input" list="jemaat-datalist" placeholder="contoh: cibinong kota" required autocomplete="off">
+                            <datalist id="jemaat-datalist"></datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Tahun Laporan</label>
+                            <input type="number" id="tahunLaporan" class="form-input" placeholder="contoh: 2023" min="2000" max="2099" required value="">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%" id="uploadBtn">
+                            <i class="fa-solid fa-upload"></i> Proses &amp; Simpan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- CREATE FROM TEMPLATE -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-file-circle-plus"></i> Laporan Baru</div>
+                    <form id="templateForm" onsubmit="handleCreateFromTemplate(event)">
+                        <div class="form-group">
+                            <label>Nama Laporan</label>
+                            <input type="text" id="templateNamaLaporan" class="form-input" placeholder="contoh: TAMAN WISMA ASRI CHURCH" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>Nama Jemaat</label>
+                            <input type="text" id="templateNamaJemaat" class="form-input" list="jemaat-datalist" placeholder="contoh: taman wisma asri" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>Tahun Laporan</label>
+                            <input type="number" id="templateTahunLaporan" class="form-input" placeholder="contoh: 2026" min="2000" max="2099" required value="">
+                        </div>
+                        <button type="submit" class="btn btn-success" style="width:100%" id="templateBtn">
+                            <i class="fa-solid fa-file-circle-plus"></i> Buat dari Template
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="right-panel">
+
+                <!-- STATS -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-label"><i class="fa-solid fa-folder-open"></i> Total Berkas</div>
+                        <div class="stat-value" id="statTotal" style="color:var(--accent-light)">0</div>
+                        <div class="stat-sub">berkas tersimpan</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-chart-line"></i> Perbandingan Tahun ke Tahun</div>
+                    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:8px;align-items:end">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label>Nama Jemaat</label>
+                            <input type="text" id="compareJemaat" class="form-input" list="jemaat-datalist" placeholder="contoh: cibinong kota">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label>Tahun Dasar</label>
+                            <input type="number" id="compareYearA" class="form-input" min="2000" max="2099" placeholder="2023">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label>Dibandingkan</label>
+                            <input type="number" id="compareYearB" class="form-input" min="2000" max="2099" placeholder="2024">
+                        </div>
+                        <button class="btn btn-primary" onclick="runYearComparison()" id="compareBtn">
+                            <i class="fa-solid fa-scale-balanced"></i> Bandingkan
+                        </button>
+                    </div>
+                    <div id="compareResult" style="display:none;margin-top:14px"></div>
+                </div>
+
+                <!-- FILE LIST -->
+                <div class="card" style="flex:1">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+                        <div class="card-title" style="margin-bottom:0"><i class="fa-solid fa-folder-tree"></i> Daftar Berkas Laporan
+                            <span id="filterInfo" style="font-size:10px;color:var(--accent-light);font-weight:600;margin-left:6px;"></span>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="clearFilters()">
+                            <i class="fa-solid fa-filter-circle-xmark"></i> Reset Filter
+                        </button>
+                    </div>
+                    <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 12px 0;">
+                        Berkas ditampilkan per folder jemaat lalu dikelompokkan lagi berdasarkan periode tahun.
+                    </div>
+                    <div id="fileList" class="file-grid">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                            <h4>Memuat berkas...</h4>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TAB: ASET ===== -->
+    <div id="tab-aset" class="tab-page">
+        <div class="placeholder-tab">
+            <div class="placeholder-inner">
+                <div class="big-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <h3>Modul Manajemen Aset</h3>
+                <p>Ruang ini sudah disiapkan untuk mendata inventaris gereja, tanah, bangunan, dan aset lainnya.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TAB: PENDETA ===== -->
+    <div id="tab-pendeta" class="tab-page">
+        <div class="placeholder-tab">
+            <div class="placeholder-inner">
+                <div class="big-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                <h3>Penempatan Wilayah Pendeta</h3>
+                <p>Modul untuk mengatur penugasan jemaat, durasi pelayanan, dan pemetaan pendeta di DKI Jakarta.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ====== SPREADSHEET MODAL ====== -->
+<div id="spreadsheetModal">
+    
+    <!-- TOP BAR -->
+    <div class="sheet-topbar">
+        <div class="sheet-title-area">
+            <button class="btn btn-ghost btn-sm" onclick="closeSpreadsheet()">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+                <h3 id="sheetModalTitle">Lembar Kerja</h3>
+                <div class="sheet-subtitle" id="sheetModalSubtitle"></div>
+            </div>
+        </div>
+        <div class="sheet-action-bar">
+            <button class="btn btn-ghost btn-sm" id="btnAddRow" onclick="addDbRow()" style="display:none">
+                <i class="fa-solid fa-plus"></i> Tambah Baris
+            </button>
+            <button class="btn btn-success btn-sm" id="btnSaveSheet" onclick="saveCurrentSheet()">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="openOnlyOfficeEditor(STATE.activeReportId)">
+                <i class="fa-solid fa-file-excel"></i> OnlyOffice
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="exportCurrentExcel()">
+                <i class="fa-solid fa-file-excel" style="color:var(--emerald)"></i> Ekspor Excel
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="exportCurrentPDF()">
+                <i class="fa-solid fa-file-pdf" style="color:var(--rose)"></i> Ekspor PDF
+            </button>
+            <button class="btn btn-purple btn-sm" onclick="triggerDeepAudit()">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> Audit
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="closeSpreadsheet()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- BODY: GRID + AUDIT SIDEBAR -->
+    <div class="sheet-body">
+        
+        <!-- SHEET MAIN AREA -->
+        <div class="sheet-main">
+
+            <!-- FORMULA BAR -->
+            <div class="formula-bar">
+                <div class="cell-ref" id="cellRefDisplay">A1</div>
+                <span style="color:var(--border-light)">|</span>
+                <input type="text" class="formula-input" id="formulaInput" placeholder="Nilai sel aktif...">
+            </div>
+
+            <div class="sheet-toolbar" id="sheetToolbar">
+                <select class="tool-select" id="fontFamilyTool" onchange="applySelectedCellStyle('fontFamily', this.value)" title="Font">
+                    <option value="Calibri, Inter, sans-serif">Calibri</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="'JetBrains Mono', monospace">Monospace</option>
+                </select>
+                <select class="tool-select" id="fontSizeTool" onchange="applySelectedCellStyle('fontSize', this.value + 'px')" title="Ukuran font">
+                    <option>10</option>
+                    <option selected>12</option>
+                    <option>14</option>
+                    <option>16</option>
+                    <option>18</option>
+                    <option>24</option>
+                </select>
+                <button class="tool-btn" onclick="toggleSelectedCellStyle('fontWeight','700','400')" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                <button class="tool-btn" onclick="toggleSelectedCellStyle('fontStyle','italic','normal')" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                <input class="tool-color" type="color" value="#111827" onchange="applySelectedCellStyle('color', this.value)" title="Warna font">
+                <input class="tool-color" type="color" value="#ffffff" onchange="applySelectedCellStyle('backgroundColor', this.value)" title="Warna sel">
+                <div class="tool-separator"></div>
+                <button class="tool-btn" onclick="insertSpreadsheetRow()" title="Insert row"><i class="fa-solid fa-plus"></i> Row</button>
+                <button class="tool-btn" onclick="insertSpreadsheetColumn()" title="Insert column"><i class="fa-solid fa-plus"></i> Col</button>
+                <button class="tool-btn" onclick="deleteSpreadsheetRow()" title="Delete row"><i class="fa-solid fa-minus"></i> Row</button>
+                <button class="tool-btn" onclick="deleteSpreadsheetColumn()" title="Delete column"><i class="fa-solid fa-minus"></i> Col</button>
+                <div class="tool-separator"></div>
+                <button class="tool-btn" onclick="openCurrentWorkbook()" title="Unduh dan buka file di Microsoft Excel"><i class="fa-solid fa-up-right-from-square"></i> Excel</button>
+            </div>
+
+            <!-- GRID CONTAINER -->
+            <div class="grid-container" id="gridContainer">
+                <div id="gridContent"></div>
+                <div class="loading-overlay" id="gridLoading">
+                    <div class="spinner"></div>
+                </div>
+                <!-- Grid rendered by JS -->
+            </div>
+
+            <!-- SHEET TABS -->
+            <div class="sheet-tabs-bar" id="sheetTabsBar"></div>
+
+            <!-- NERACA FOOTER -->
+            <div class="sheet-neraca-footer" id="neracaFooter" style="display:none">
+                <div class="neraca-item">
+                    <span class="neraca-label">Total Debit:</span>
+                    <span class="neraca-val" id="ftDebit" style="color:var(--emerald)">Rp 0</span>
+                </div>
+                <div class="neraca-item">
+                    <span class="neraca-label">Total Kredit:</span>
+                    <span class="neraca-val" id="ftKredit" style="color:var(--rose)">Rp 0</span>
+                </div>
+                <div class="neraca-item">
+                    <span class="neraca-label">Selisih:</span>
+                    <span class="neraca-val" id="ftSelisih">Rp 0</span>
+                </div>
+                <span style="color:var(--text-muted);font-size:10px;margin-left:auto">Mode: <span id="editModeLabel" style="color:var(--accent-light)">Excel Fisik</span></span>
+            </div>
+        </div>
+
+        <!-- AUDIT SIDEBAR -->
+        <div class="audit-sidebar" id="auditSidebar">
+            <div class="audit-sidebar-header">
+                <h4><i class="fa-solid fa-shield-halved" style="color:var(--purple);margin-right:6px"></i> Panel Audit</h4>
+            </div>
+            <div class="audit-sidebar-content" id="auditContent">
+                <div class="audit-placeholder">
+                    <div class="audit-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h5>Menunggu Evaluasi</h5>
+                    <p>Klik tombol "Audit" di atas untuk menjalankan mesin audit otomatis.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+// ================================================================
+// STATE MANAGEMENT
+// ================================================================
+const STATE = {
+    activeFilter: { jemaat: null, tahun: null, search: '' },
+    activeReportId: null,
+    activeReport: null,
+    activeSheetName: null,
+    allSheets: [],
+    gridData: [],          // current sheet grid data (2D array)
+    dbRows: [],            // fallback DB rows
+    isExcelMode: false,    // true = excel file mode, false = DB mode
+    selectedCell: null,    // {r, c}
+    editingCell: null,     // {r, c}
+    cellStyles: {},
+    isDirty: false,
+};
+
+// ================================================================
+// UTILS
+// ================================================================
+function formatRp(n) {
+    const v = parseFloat(n) || 0;
+    return 'Rp ' + v.toLocaleString('id-ID');
+}
+function capitalize(str) {
+    return str ? str.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
+}
+function normalizeText(str) {
+    return String(str || '').trim().replace(/\s+/g, ' ');
+}
+function escapeHtml(str) {
+    return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+function setFormulaBarState(enabled, placeholder = 'Nilai sel aktif...') {
+    const input = document.getElementById('formulaInput');
+    input.disabled = !enabled;
+    input.placeholder = placeholder;
+    if (!enabled) input.value = '';
+}
+function groupReportsByFolder(reports) {
+    const groups = new Map();
+    reports.forEach(report => {
+        const folderKey = report.folder_key || normalizeText(report.nama_jemaat || 'tanpa-nama').toLowerCase() || 'tanpa-nama';
+        const folderName = report.nama_jemaat_display || capitalize(report.nama_jemaat) || 'Tanpa Jemaat';
+        const yearKey = report.tahun_laporan || 'Tanpa Tahun';
+
+        if (!groups.has(folderKey)) {
+            groups.set(folderKey, {
+                key: folderKey,
+                name: folderName,
+                totalFiles: 0,
+                years: new Map()
+            });
+        }
+
+        const folder = groups.get(folderKey);
+        folder.totalFiles += 1;
+
+        if (!folder.years.has(yearKey)) {
+            folder.years.set(yearKey, []);
+        }
+        folder.years.get(yearKey).push(report);
+    });
+
+    return Array.from(groups.values())
+        .sort((a, b) => a.name.localeCompare(b.name, 'id'))
+        .map(folder => ({
+            ...folder,
+            years: Array.from(folder.years.entries())
+                .sort((a, b) => String(b[0]).localeCompare(String(a[0]), 'id', { numeric: true }))
+                .map(([year, items]) => ({ year, items }))
+        }));
+}
+function toast(msg, type = 'info') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info' };
+    el.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i> ${msg}`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(100%)'; el.style.transition = '0.3s'; setTimeout(() => el.remove(), 300); }, 3500);
+}
+function colName(idx) {
+    let s = '';
+    idx++;
+    while (idx > 0) { s = String.fromCharCode(64 + (idx % 26 || 26)) + s; idx = Math.floor((idx - 1) / 26); }
+    return s;
+}
+function getSelectedCellElement() {
+    if (!STATE.selectedCell) return null;
+    const { r, c } = STATE.selectedCell;
+    return document.querySelector(`.data-cell[data-row="${r}"][data-col="${c}"]`);
+}
+function styleKey(r, c) {
+    return `${STATE.activeSheetName || 'sheet'}:${r},${c}`;
+}
+
+// ================================================================
+// NAV TAB SWITCHING
+// ================================================================
+function switchTab(name) {
+    ['keuangan','aset','pendeta'].forEach(t => {
+        document.getElementById('tab-' + t).classList.toggle('active', t === name);
+        const btn = document.getElementById('btn-' + t);
+        btn.classList.toggle('active', t === name);
+    });
+    const titles = { keuangan: 'Modul Keuangan & Audit', aset: 'Manajemen Aset', pendeta: 'Penempatan Wilayah Pendeta' };
+    document.getElementById('pageTitle').innerText = titles[name];
+}
+
+// ================================================================
+// INIT & REFRESH
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    refreshAllData();
+    document.getElementById('tahunLaporan').value = new Date().getFullYear();
+    document.getElementById('templateTahunLaporan').value = new Date().getFullYear();
+    setupDragDrop();
+    setupFormulaBar();
+});
+
+async function refreshAllData() {
+    await Promise.all([
+        loadJemaatList(),
+        loadYearsList(),
+        loadFiles()
+    ]);
+}
+
+// ================================================================
+// LOAD JEMAAT CHIPS
+// ================================================================
+async function loadJemaatList() {
+    try {
+        const res = await fetch('/api/jemaat-list');
+        const list = await res.json();
+        const container = document.getElementById('jemaatChips');
+        const datalist = document.getElementById('jemaat-datalist');
+        
+        container.innerHTML = '';
+        datalist.innerHTML = '';
+        
+        if (list.length === 0) {
+            container.innerHTML = '<span class="chip" style="color:var(--text-muted)">Belum ada jemaat</span>';
+            return;
+        }
+        
+        list.forEach(j => {
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.textContent = capitalize(j);
+            chip.dataset.jemaat = j;
+            chip.addEventListener('click', () => toggleJemaatFilter(j, chip));
+            container.appendChild(chip);
+            
+            const opt = document.createElement('option');
+            opt.value = j;
+            datalist.appendChild(opt);
+        });
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function toggleJemaatFilter(jemaat, chipEl) {
+    const wasActive = STATE.activeFilter.jemaat === jemaat;
+    // Reset all chips
+    document.querySelectorAll('#jemaatChips .chip').forEach(c => c.classList.remove('active'));
+    STATE.activeFilter.jemaat = wasActive ? null : jemaat;
+    if (!wasActive) chipEl.classList.add('active');
+    loadFiles();
+}
+
+// ================================================================
+// LOAD YEAR CHIPS
+// ================================================================
+async function loadYearsList() {
+    try {
+        const res = await fetch('/api/years');
+        const years = await res.json();
+        const container = document.getElementById('yearChips');
+        const select = document.getElementById('yearSelect');
+        container.innerHTML = '';
+        select.innerHTML = '<option value="">Semua periode tahun</option>';
+        
+        if (years.length === 0) {
+            container.innerHTML = '<span class="chip" style="color:var(--text-muted)">Belum ada data</span>';
+            return;
+        }
+        
+        years.forEach(y => {
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.textContent = y;
+            chip.dataset.tahun = y;
+            chip.addEventListener('click', () => toggleYearFilter(y, chip));
+            container.appendChild(chip);
+
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            select.appendChild(opt);
+        });
+
+        select.value = STATE.activeFilter.tahun || '';
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function handleYearSelect(tahun) {
+    const selected = tahun ? String(tahun) : null;
+    STATE.activeFilter.tahun = selected;
+    document.querySelectorAll('#yearChips .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.tahun === selected);
+    });
+    loadFiles();
+}
+
+function toggleYearFilter(tahun, chipEl) {
+    const tahunText = String(tahun);
+    const wasActive = String(STATE.activeFilter.tahun) === tahunText;
+    document.querySelectorAll('#yearChips .chip').forEach(c => c.classList.remove('active'));
+    STATE.activeFilter.tahun = wasActive ? null : tahunText;
+    if (!wasActive) chipEl.classList.add('active');
+    document.getElementById('yearSelect').value = wasActive ? '' : tahunText;
+    loadFiles();
+}
+
+function clearFilters() {
+    STATE.activeFilter = { jemaat: null, tahun: null, search: '' };
+    document.getElementById('searchInput').value = '';
+    document.getElementById('yearSelect').value = '';
+    document.querySelectorAll('#jemaatChips .chip, #yearChips .chip').forEach(c => c.classList.remove('active'));
+    loadFiles();
+}
+
+let searchTimeout;
+function handleSearch(val) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        STATE.activeFilter.search = val.trim();
+        loadFiles();
+    }, 300);
+}
+
+function formatPercent(value) {
+    if (value === null || value === undefined || !isFinite(value)) return '-';
+    const sign = value > 0 ? '+' : '';
+    return sign + value.toFixed(2).replace('.', ',') + '%';
+}
+
+async function runYearComparison() {
+    const jemaat = document.getElementById('compareJemaat').value.trim();
+    const yearA = document.getElementById('compareYearA').value.trim();
+    const yearB = document.getElementById('compareYearB').value.trim();
+    const resultBox = document.getElementById('compareResult');
+    const btn = document.getElementById('compareBtn');
+
+    if (!jemaat || !yearA || !yearB) {
+        toast('Isi nama jemaat dan dua tahun yang ingin dibandingkan.', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membandingkan...';
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = '<div class="empty-state" style="padding:18px"><div class="spinner" style="width:24px;height:24px"></div><h4>Menganalisis...</h4></div>';
+
+    try {
+        const params = new URLSearchParams({ jemaat, yearA, yearB });
+        const res = await fetch('/api/compare-year?' + params.toString());
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Gagal membandingkan laporan.');
+
+        const diffColor = data.diff.net >= 0 ? 'var(--emerald)' : 'var(--rose)';
+        const netLabel = data.diff.net >= 0 ? 'Keuntungan/kenaikan net' : 'Kerugian/penurunan net';
+        resultBox.innerHTML = `
+            <div style="border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,0.03);padding:14px">
+                <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:800;letter-spacing:.7px">${escapeHtml(data.jemaatDisplay)}</div>
+                        <div style="font-size:15px;font-weight:800;margin-top:4px">${escapeHtml(data.verdict)}</div>
+                    </div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:${diffColor}">${formatRp(Math.abs(data.diff.net))}</div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                    <div class="folder-stat" style="justify-content:space-between"><span>${data.base.year} Net</span><b>${formatRp(data.base.net)}</b></div>
+                    <div class="folder-stat" style="justify-content:space-between"><span>${data.compared.year} Net</span><b>${formatRp(data.compared.net)}</b></div>
+                    <div class="folder-stat" style="justify-content:space-between"><span>${netLabel}</span><b style="color:${diffColor}">${formatRp(data.diff.net)}</b></div>
+                    <div class="folder-stat" style="justify-content:space-between"><span>Pemasukan</span><b>${formatRp(data.diff.pemasukan)} (${formatPercent(data.diff.pemasukanPct)})</b></div>
+                    <div class="folder-stat" style="justify-content:space-between"><span>Pengeluaran</span><b>${formatRp(data.diff.pengeluaran)} (${formatPercent(data.diff.pengeluaranPct)})</b></div>
+                    <div class="folder-stat" style="justify-content:space-between"><span>Perubahan Net</span><b style="color:${diffColor}">${formatPercent(data.diff.netPct)}</b></div>
+                </div>
+            </div>`;
+    } catch (error) {
+        resultBox.innerHTML = `<div style="border:1px solid rgba(244,63,94,.3);background:rgba(244,63,94,.08);color:var(--rose);border-radius:10px;padding:12px">${escapeHtml(error.message)}</div>`;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-scale-balanced"></i> Bandingkan';
+    }
+}
+
+// ================================================================
+// LOAD FILE LIST
+// ================================================================
+async function loadFiles() {
+    const container = document.getElementById('fileList');
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon"><div class="spinner" style="width:28px;height:28px"></div></div><h4>Memuat...</h4></div>';
+    
+    try {
+        const params = new URLSearchParams();
+        if (STATE.activeFilter.jemaat) params.set('jemaat', STATE.activeFilter.jemaat);
+        if (STATE.activeFilter.tahun) params.set('tahun', STATE.activeFilter.tahun);
+        if (STATE.activeFilter.search) params.set('search', STATE.activeFilter.search);
+        
+        const res = await fetch('/api/reports?' + params.toString());
+        const reports = await res.json();
+        
+        // Update filter info
+        const filterInfo = document.getElementById('filterInfo');
+        const parts = [];
+        if (STATE.activeFilter.jemaat) parts.push(`Jemaat: ${capitalize(STATE.activeFilter.jemaat)}`);
+        if (STATE.activeFilter.tahun) parts.push(`Tahun: ${STATE.activeFilter.tahun}`);
+        if (STATE.activeFilter.search) parts.push(`Cari: "${STATE.activeFilter.search}"`);
+        filterInfo.textContent = parts.length ? '— ' + parts.join(', ') : '';
+        
+        document.getElementById('statTotal').textContent = reports.length;
+        
+        container.innerHTML = '';
+        
+        if (reports.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                    <h4>Tidak ada berkas</h4>
+                    <p>${STATE.activeFilter.jemaat || STATE.activeFilter.tahun || STATE.activeFilter.search ? 'Tidak ada berkas yang cocok dengan filter ini.' : 'Upload berkas Excel pertama untuk memulai.'}</p>
+                </div>`;
+            return;
+        }
+
+        const groupedReports = groupReportsByFolder(reports);
+
+        groupedReports.forEach(folder => {
+            const folderEl = document.createElement('section');
+            folderEl.className = 'folder-group fade-in';
+
+            const folderYearsLabel = folder.years.length > 1 ? `${folder.years.length} periode tahun` : '1 periode tahun';
+            folderEl.innerHTML = `
+                <div class="folder-group-header">
+                    <div class="folder-group-title">
+                        <div class="folder-group-icon"><i class="fa-solid fa-folder-tree"></i></div>
+                        <div class="folder-group-meta">
+                            <h4>${escapeHtml(folder.name)}</h4>
+                            <p>Folder jemaat otomatis, pencarian huruf besar-kecil diabaikan.</p>
+                        </div>
+                    </div>
+                    <div class="folder-group-stats">
+                        <span class="folder-stat"><i class="fa-solid fa-file-lines"></i>${folder.totalFiles} berkas</span>
+                        <span class="folder-stat"><i class="fa-solid fa-calendar-days"></i>${folderYearsLabel}</span>
+                    </div>
+                </div>
+                <div class="folder-years"></div>
+            `;
+
+            const folderYearsEl = folderEl.querySelector('.folder-years');
+
+            folder.years.forEach(yearGroup => {
+                const yearEl = document.createElement('div');
+                yearEl.className = 'year-group';
+                yearEl.innerHTML = `
+                    <div class="year-group-header">
+                        <h5><i class="fa-solid fa-calendar"></i> Periode ${escapeHtml(yearGroup.year)}</h5>
+                        <span>${yearGroup.items.length} file tersimpan</span>
+                    </div>
+                    <div class="year-group-files"></div>
+                `;
+
+                const filesEl = yearEl.querySelector('.year-group-files');
+
+                yearGroup.items.forEach(r => {
+                    const statusBadge = r.status_audit === 'Balance'
+                        ? '<span class="file-badge badge-balance">Balance</span>'
+                        : r.status_audit === 'Proses'
+                            ? '<span class="file-badge badge-proses">Proses</span>'
+                            : '<span class="file-badge badge-selisih">Selisih</span>';
+
+                    const jemaatTag = r.nama_jemaat_display
+                        ? `<span class="tag tag-jemaat"><i class="fa-solid fa-church" style="font-size:9px"></i>${escapeHtml(r.nama_jemaat_display)}</span>`
+                        : '';
+                    const tahunTag = r.tahun_laporan
+                        ? `<span class="tag tag-tahun"><i class="fa-solid fa-calendar" style="font-size:9px"></i>${escapeHtml(r.tahun_laporan)}</span>`
+                        : '';
+                    const safeName = escapeHtml(r.nama_file_asli || r.nama_report);
+                    const deleteName = (r.nama_file_asli || r.nama_report).replace(/'/g, "\\'");
+
+                    const card = document.createElement('div');
+                    card.className = 'file-card' + (STATE.activeReportId == r.id ? ' active-file' : '');
+                    card.id = 'file-card-' + r.id;
+                    card.innerHTML = `
+                        <div class="file-icon"><i class="fa-solid fa-file-excel"></i></div>
+                        <div class="file-info">
+                            <div class="file-name" title="${safeName}">${safeName}</div>
+                            <div class="file-meta">
+                                ${jemaatTag} ${tahunTag}
+                                <span style="color:var(--text-muted)">Debit: <b style="color:var(--emerald)">${formatRp(r.total_debit)}</b></span>
+                                <span style="color:var(--text-muted)">Kredit: <b style="color:var(--rose)">${formatRp(r.total_kredit)}</b></span>
+                            </div>
+                        </div>
+                        ${statusBadge}
+                        <div class="file-actions">
+                            <button class="btn btn-primary btn-sm" onclick="openSpreadsheet(${r.id})" title="Buka Editor">
+                                <i class="fa-solid fa-table-cells"></i>
+                            </button>
+                            <button class="btn btn-success btn-sm" onclick="openOnlyOfficeEditor(${r.id})" title="Buka OnlyOffice">
+                                <i class="fa-solid fa-file-excel"></i>
+                            </button>
+                            ${r.file_url ? `<a class="btn btn-ghost btn-sm" href="${encodeURI(r.file_url)}" target="_blank" title="Buka File Asli"><i class="fa-solid fa-folder-open"></i></a>` : ''}
+                            <button class="btn btn-ghost btn-sm" onclick="confirmDelete(${r.id}, '${deleteName}')" title="Hapus">
+                                <i class="fa-solid fa-trash" style="color:var(--rose)"></i>
+                            </button>
+                        </div>`;
+                    filesEl.appendChild(card);
+                });
+
+                folderYearsEl.appendChild(yearEl);
+            });
+
+            container.appendChild(folderEl);
+        });
+    } catch(e) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-triangle-exclamation" style="color:var(--rose)"></i></div><h4>Gagal memuat</h4><p>${e.message}</p></div>`;
+    }
+}
+
+// ================================================================
+// UPLOAD
+// ================================================================
+function handleFileSelect(input) {
+    const file = input.files[0];
+    if (file) {
+        document.getElementById('uploadFileName').innerHTML = `<span class="file-chosen"><i class="fa-solid fa-file-excel"></i> ${file.name}</span>`;
+        // Auto-isi tahun dari nama file jika ada 4 digit
+        const yearMatch = file.name.match(/\b(20\d{2})\b/);
+        if (yearMatch) document.getElementById('tahunLaporan').value = yearMatch[1];
+    }
+}
+
+function setupDragDrop() {
+    const zone = document.getElementById('uploadZone');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            document.getElementById('excelFile').files = e.dataTransfer.files;
+            handleFileSelect(document.getElementById('excelFile'));
+        }
+    });
+}
+
+async function handleUpload(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById('excelFile');
+    const namaJemaat = document.getElementById('namaJemaat').value.trim();
+    const tahunLaporan = document.getElementById('tahunLaporan').value.trim();
+    
+    if (!fileInput.files[0]) { toast('Pilih file Excel dulu!', 'error'); return; }
+    if (!namaJemaat) { toast('Nama jemaat wajib diisi!', 'error'); return; }
+    if (!tahunLaporan) { toast('Tahun laporan wajib diisi!', 'error'); return; }
+    
+    const btn = document.getElementById('uploadBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+    
+    const progress = document.getElementById('upload-progress');
+    const progressBar = document.getElementById('progressBar');
+    progress.style.display = 'block';
+    
+    // Animate progress (simulated)
+    let pct = 0;
+    const pInt = setInterval(() => {
+        pct = Math.min(pct + 8, 85);
+        progressBar.style.width = pct + '%';
+    }, 200);
+    
+    try {
+        const formData = new FormData();
+        formData.append('excelFile', fileInput.files[0]);
+        formData.append('nama_jemaat', namaJemaat.toLowerCase());
+        formData.append('tahun_laporan', tahunLaporan);
+        
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const result = await res.json();
+        
+        clearInterval(pInt);
+        progressBar.style.width = '100%';
+        
+        if (res.ok) {
+            toast(result.message, 'success');
+            document.getElementById('uploadForm').reset();
+            document.getElementById('uploadFileName').textContent = 'Klik atau seret file ke sini';
+            document.getElementById('tahunLaporan').value = new Date().getFullYear();
+            await refreshAllData();
+        } else {
+            toast(result.message || 'Upload gagal', 'error');
+        }
+    } catch(err) {
+        clearInterval(pInt);
+        toast('Kesalahan koneksi: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-upload"></i> Proses & Simpan';
+        setTimeout(() => { progress.style.display = 'none'; progressBar.style.width = '0%'; }, 1000);
+    }
+}
+
+async function handleCreateFromTemplate(e) {
+    e.preventDefault();
+    const namaLaporan = document.getElementById('templateNamaLaporan').value.trim();
+    const namaJemaat = document.getElementById('templateNamaJemaat').value.trim();
+    const tahunLaporan = document.getElementById('templateTahunLaporan').value.trim();
+
+    if (!namaLaporan) { toast('Nama laporan wajib diisi!', 'error'); return; }
+    if (!namaJemaat) { toast('Nama jemaat wajib diisi!', 'error'); return; }
+    if (!tahunLaporan) { toast('Tahun laporan wajib diisi!', 'error'); return; }
+
+    const btn = document.getElementById('templateBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membuat...';
+
+    try {
+        const res = await fetch('/api/report/create-from-template', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nama_laporan: namaLaporan,
+                nama_jemaat: namaJemaat.toLowerCase(),
+                tahun_laporan: tahunLaporan
+            })
+        });
+        const result = await res.json();
+
+        if (res.ok) {
+            toast(result.message, 'success');
+            document.getElementById('templateForm').reset();
+            document.getElementById('templateTahunLaporan').value = new Date().getFullYear();
+            await refreshAllData();
+            if (result.reportId) openSpreadsheet(result.reportId);
+        } else {
+            toast(result.message || 'Gagal membuat laporan', 'error');
+        }
+    } catch(err) {
+        toast('Kesalahan koneksi: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-file-circle-plus"></i> Buat dari Template';
+    }
+}
+
+// ================================================================
+// DELETE
+// ================================================================
+async function confirmDelete(id, name) {
+    if (!confirm(`Hapus berkas "${name}" beserta semua data transaksinya?\n\nTindakan ini tidak dapat dibatalkan.`)) return;
+    try {
+        const res = await fetch(`/api/report/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (res.ok) {
+            toast(result.message, 'success');
+            if (STATE.activeReportId == id) closeSpreadsheet();
+            await refreshAllData();
+        } else {
+            toast(result.message, 'error');
+        }
+    } catch(e) {
+        toast('Gagal menghapus: ' + e.message, 'error');
+    }
+}
+
+// ================================================================
+// OPEN SPREADSHEET EDITOR
+// ================================================================
+async function openSpreadsheet(reportId) {
+    STATE.activeReportId = reportId;
+    STATE.isDirty = false;
+    
+    // Mark active file card
+    document.querySelectorAll('.file-card').forEach(c => c.classList.remove('active-file'));
+    const card = document.getElementById('file-card-' + reportId);
+    if (card) card.classList.add('active-file');
+    
+    // Open modal
+    const modal = document.getElementById('spreadsheetModal');
+    modal.classList.add('open');
+    document.getElementById('gridLoading').style.display = 'flex';
+    document.getElementById('auditContent').innerHTML = `
+        <div class="audit-placeholder">
+            <div class="audit-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h5>Menunggu Evaluasi</h5>
+            <p>Klik tombol "Audit" untuk memulai.</p>
+        </div>`;
+    document.getElementById('neracaFooter').style.display = 'none';
+    
+    try {
+        // Ambil info sheets
+        const sheetsRes = await fetch(`/api/report/${reportId}/sheets`);
+        const sheetsData = await sheetsRes.json();
+        STATE.allSheets = sheetsData.sheets || ['Data Transaksi'];
+        STATE.isExcelMode = sheetsData.hasExcelFile === true;
+        
+        // Set title dari file list data
+        const fileCard = document.getElementById('file-card-' + reportId);
+        const title = fileCard ? fileCard.querySelector('.file-name').textContent : 'Lembar Kerja';
+        const subtitle = fileCard ? (fileCard.querySelector('.tag-jemaat')?.textContent || '') + ' ' + (fileCard.querySelector('.tag-tahun')?.textContent || '') : '';
+        document.getElementById('sheetModalTitle').textContent = title;
+        document.getElementById('sheetModalSubtitle').textContent = subtitle.trim();
+        document.getElementById('editModeLabel').textContent = STATE.isExcelMode ? 'Excel Fisik' : 'Database';
+        
+        // Show/hide add row button (only for DB mode)
+        document.getElementById('btnAddRow').style.display = STATE.isExcelMode ? 'none' : 'inline-flex';
+        
+        // Render sheet tabs
+        renderSheetTabs();
+        
+        // Load first sheet
+        await loadSheet(STATE.allSheets[0]);
+        
+    } catch(e) {
+        document.getElementById('gridLoading').style.display = 'none';
+        toast('Gagal membuka spreadsheet: ' + e.message, 'error');
+    }
+}
+
+function closeSpreadsheet() {
+    if (STATE.isDirty && !confirm('Ada perubahan yang belum disimpan. Tutup tetap?')) return;
+    document.getElementById('spreadsheetModal').classList.remove('open');
+    STATE.activeReportId = null;
+    STATE.isDirty = false;
+    document.querySelectorAll('.file-card').forEach(c => c.classList.remove('active-file'));
+}
+
+function openOnlyOfficeEditor(reportId) {
+    if (!reportId) return;
+    if (STATE.isDirty && !confirm('Ada perubahan di editor lama yang belum disimpan. Buka OnlyOffice tetap?')) return;
+    window.open(`/onlyoffice-editor.html?reportId=${encodeURIComponent(reportId)}`, '_blank', 'noopener');
+}
+
+// ================================================================
+// SHEET TABS
+// ================================================================
+function renderSheetTabs() {
+    const bar = document.getElementById('sheetTabsBar');
+    bar.innerHTML = '';
+    STATE.allSheets.forEach(name => {
+        const tab = document.createElement('div');
+        tab.className = 'sheet-tab' + (name === STATE.activeSheetName ? ' active' : '');
+        tab.innerHTML = `<i class="fa-solid fa-table" style="font-size:10px;opacity:0.6"></i> ${name}`;
+        tab.addEventListener('click', () => {
+            if (STATE.isDirty && !confirm('Ada perubahan yang belum disimpan. Pindah sheet tetap?')) return;
+            loadSheet(name);
+        });
+        bar.appendChild(tab);
+    });
+}
+
+// ================================================================
+// LOAD SHEET DATA
+// ================================================================
+async function loadSheet(sheetName) {
+    STATE.activeSheetName = sheetName;
+    STATE.isDirty = false;
+    STATE.selectedCell = null;
+    STATE.editingCell = null;
+    STATE.cellStyles = {};
+    
+    // Update tab active state
+    document.querySelectorAll('.sheet-tab').forEach(t => {
+        t.classList.toggle('active', t.textContent.trim().includes(sheetName));
+    });
+    
+    document.getElementById('gridLoading').style.display = 'flex';
+    document.getElementById('gridContent').innerHTML = '';
+    
+    try {
+        if (STATE.isExcelMode) {
+            setFormulaBarState(true, 'Edit nilai sel dari sini atau langsung double click pada grid...');
+            const res = await fetch(`/api/report/${STATE.activeReportId}/sheet/${encodeURIComponent(sheetName)}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message);
+            STATE.gridData = data.data || [];
+            renderExcelGrid(STATE.gridData, data.colWidths || [], data.merges || []);
+            document.getElementById('neracaFooter').style.display = 'none';
+        } else {
+            // DB mode — show editable DB table
+            setFormulaBarState(false, 'Formula bar hanya aktif untuk mode Excel fisik');
+            const res = await fetch(`/api/report/${STATE.activeReportId}/details`);
+            STATE.dbRows = await res.json();
+            renderDbEditor();
+            document.getElementById('neracaFooter').style.display = 'flex';
+            recalcNeracaFooter();
+        }
+        
+    } catch(e) {
+        document.getElementById('gridContent').innerHTML = `<div style="padding:40px;text-align:center;color:var(--rose)"><i class="fa-solid fa-triangle-exclamation" style="font-size:32px;margin-bottom:12px;display:block"></i>${e.message}</div>`;
+    } finally {
+        document.getElementById('gridLoading').style.display = 'none';
+    }
+}
+
+// ================================================================
+// RENDER EXCEL GRID (multi-sheet, read & editable)
+// ================================================================
+function renderExcelGrid(data, colWidths, merges) {
+    if (!data || data.length === 0) {
+        document.getElementById('gridContent').innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)"><i class="fa-solid fa-table" style="font-size:32px;display:block;margin-bottom:10px;opacity:0.3"></i>Sheet kosong</div>';
+        document.getElementById('cellRefDisplay').textContent = 'A1';
+        document.getElementById('formulaInput').value = '';
+        return;
+    }
+    
+    const numRows = data.length;
+    const numCols = Math.max(...data.map(r => r ? r.length : 0), 1);
+    
+    // Build merge lookup
+    const mergeMap = {};
+    (merges || []).forEach(m => {
+        for (let r = m.s.r; r <= m.e.r; r++) {
+            for (let c = m.s.c; c <= m.e.c; c++) {
+                if (r === m.s.r && c === m.s.c) {
+                    mergeMap[`${r},${c}`] = { rowspan: m.e.r - m.s.r + 1, colspan: m.e.c - m.s.c + 1 };
+                } else {
+                    mergeMap[`${r},${c}`] = 'skip';
+                }
+            }
+        }
+    });
+    
+    const table = document.createElement('table');
+    table.className = 'excel-table';
+    
+    // HEADER ROW (column letters)
+    const headerRow = document.createElement('tr');
+    // Corner
+    const corner = document.createElement('th');
+    corner.className = 'col-header corner';
+    corner.textContent = '';
+    headerRow.appendChild(corner);
+    
+    for (let c = 0; c < numCols; c++) {
+        const th = document.createElement('th');
+        th.className = 'col-header';
+        th.textContent = colName(c);
+        const w = colWidths[c] ? Math.max(60, colWidths[c] * 7) : 100;
+        th.style.minWidth = w + 'px';
+        th.style.width = w + 'px';
+        headerRow.appendChild(th);
+    }
+    table.appendChild(headerRow);
+    
+    // DATA ROWS
+    for (let r = 0; r < numRows; r++) {
+        const tr = document.createElement('tr');
+        // Row number
+        const rNum = document.createElement('td');
+        rNum.className = 'row-num';
+        rNum.textContent = r + 1;
+        tr.appendChild(rNum);
+        
+        for (let c = 0; c < numCols; c++) {
+            const key = `${r},${c}`;
+            if (mergeMap[key] === 'skip') continue;
+            
+            const td = document.createElement('td');
+            td.className = 'data-cell';
+            td.dataset.row = r;
+            td.dataset.col = c;
+            
+            if (mergeMap[key]) {
+                td.rowSpan = mergeMap[key].rowspan;
+                td.colSpan = mergeMap[key].colspan;
+            }
+            
+            const val = (data[r] && data[r][c] !== undefined && data[r][c] !== null) ? data[r][c] : '';
+            td.textContent = val;
+            const savedStyle = STATE.cellStyles[styleKey(r, c)];
+            if (savedStyle) Object.assign(td.style, savedStyle);
+            
+            // Detect number cells → right-align
+            if (typeof val === 'number' || (typeof val === 'string' && /^[\d.,]+$/.test(val.replace(/\s/g,'')))) {
+                td.style.textAlign = 'right';
+                if (typeof val === 'number' && val !== 0) {
+                    td.textContent = val.toLocaleString('id-ID');
+                }
+            }
+            
+            // Click to select
+            td.addEventListener('click', (e) => selectCell(r, c, td));
+            // Double-click to edit
+            td.addEventListener('dblclick', (e) => startEditing(r, c, td));
+            
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+    
+    const gridContent = document.getElementById('gridContent');
+    gridContent.innerHTML = '';
+    gridContent.appendChild(table);
+    
+    // Keyboard nav
+    table.setAttribute('tabindex', '0');
+    table.addEventListener('keydown', handleGridKeydown);
+    requestAnimationFrame(() => {
+        table.focus();
+        const firstCell = table.querySelector('.data-cell[data-row="0"][data-col="0"]');
+        if (firstCell) selectCell(0, 0, firstCell);
+    });
+}
+
+// ================================================================
+// CELL SELECTION & EDITING
+// ================================================================
+function getCellDisplayValue(val) {
+    if (val === undefined || val === null) return '';
+    if (typeof val === 'number') return val === 0 ? '0' : val.toLocaleString('id-ID');
+    return String(val);
+}
+
+function applyCellValue(r, c, td, newVal) {
+    if (!STATE.gridData[r]) STATE.gridData[r] = [];
+    STATE.gridData[r][c] = newVal;
+    td.classList.remove('editing');
+    td.textContent = getCellDisplayValue(newVal);
+    td.style.textAlign = (!isNaN(parseFloat(newVal)) && newVal !== '') ? 'right' : '';
+    document.getElementById('formulaInput').value = newVal ?? '';
+    STATE.isDirty = true;
+}
+
+function selectCell(r, c, td) {
+    // Deselect previous
+    document.querySelectorAll('.data-cell.selected').forEach(el => el.classList.remove('selected'));
+    td.classList.add('selected');
+    STATE.selectedCell = { r, c };
+    
+    const val = STATE.gridData[r] && STATE.gridData[r][c] !== undefined ? STATE.gridData[r][c] : '';
+    document.getElementById('cellRefDisplay').textContent = colName(c) + (r + 1);
+    document.getElementById('formulaInput').value = val;
+}
+
+function applySelectedCellStyle(prop, value) {
+    if (!STATE.isExcelMode || !STATE.selectedCell) return;
+    const td = getSelectedCellElement();
+    if (!td) return;
+    const { r, c } = STATE.selectedCell;
+    const key = styleKey(r, c);
+    STATE.cellStyles[key] = { ...(STATE.cellStyles[key] || {}), [prop]: value };
+    td.style[prop] = value;
+    STATE.isDirty = true;
+}
+
+function toggleSelectedCellStyle(prop, activeValue, inactiveValue) {
+    const td = getSelectedCellElement();
+    if (!td) return;
+    const current = td.style[prop] || getComputedStyle(td)[prop];
+    applySelectedCellStyle(prop, String(current) === activeValue ? inactiveValue : activeValue);
+}
+
+function getGridSize() {
+    return {
+        rows: Math.max(STATE.gridData.length, 1),
+        cols: Math.max(...STATE.gridData.map(row => Array.isArray(row) ? row.length : 0), 1)
+    };
+}
+
+function insertSpreadsheetRow() {
+    if (!STATE.isExcelMode || !STATE.selectedCell) return;
+    if (STATE.editingCell) finishEditing();
+    const { r } = STATE.selectedCell;
+    const { cols } = getGridSize();
+    STATE.gridData.splice(r, 0, Array(cols).fill(''));
+    STATE.isDirty = true;
+    renderExcelGrid(STATE.gridData, [], []);
+    toast('Baris baru ditambahkan.', 'success');
+}
+
+function insertSpreadsheetColumn() {
+    if (!STATE.isExcelMode || !STATE.selectedCell) return;
+    if (STATE.editingCell) finishEditing();
+    const { c } = STATE.selectedCell;
+    const { rows } = getGridSize();
+    for (let r = 0; r < rows; r++) {
+        if (!STATE.gridData[r]) STATE.gridData[r] = [];
+        STATE.gridData[r].splice(c, 0, '');
+    }
+    STATE.isDirty = true;
+    renderExcelGrid(STATE.gridData, [], []);
+    toast('Kolom baru ditambahkan.', 'success');
+}
+
+function deleteSpreadsheetRow() {
+    if (!STATE.isExcelMode || !STATE.selectedCell || STATE.gridData.length <= 1) return;
+    if (STATE.editingCell) finishEditing();
+    STATE.gridData.splice(STATE.selectedCell.r, 1);
+    STATE.isDirty = true;
+    renderExcelGrid(STATE.gridData, [], []);
+    toast('Baris dihapus.', 'success');
+}
+
+function deleteSpreadsheetColumn() {
+    if (!STATE.isExcelMode || !STATE.selectedCell) return;
+    if (STATE.editingCell) finishEditing();
+    const { c } = STATE.selectedCell;
+    STATE.gridData.forEach(row => {
+        if (Array.isArray(row) && row.length > 1) row.splice(c, 1);
+    });
+    STATE.isDirty = true;
+    renderExcelGrid(STATE.gridData, [], []);
+    toast('Kolom dihapus.', 'success');
+}
+
+function openCurrentWorkbook() {
+    exportCurrentExcel();
+}
+
+function startEditing(r, c, td) {
+    if (STATE.editingCell) finishEditing();
+    STATE.editingCell = { r, c, td };
+    td.classList.add('editing');
+    
+    const val = STATE.gridData[r] && STATE.gridData[r][c] !== undefined ? STATE.gridData[r][c] : '';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'cell-editor';
+    input.value = val;
+    td.innerHTML = '';
+    td.appendChild(input);
+    input.focus();
+    input.select();
+    
+    input.addEventListener('blur', () => finishEditing());
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); finishEditing(); }
+        if (e.key === 'Escape') {
+            td.textContent = getCellDisplayValue(val);
+            STATE.editingCell = null;
+            td.classList.remove('editing');
+            document.getElementById('formulaInput').value = val ?? '';
+        }
+        e.stopPropagation();
+    });
+}
+
+function finishEditing() {
+    if (!STATE.editingCell) return;
+    const { r, c, td } = STATE.editingCell;
+    const input = td.querySelector('.cell-editor');
+    if (!input) { STATE.editingCell = null; return; }
+    
+    const newVal = input.value;
+    applyCellValue(r, c, td, newVal);
+    STATE.editingCell = null;
+}
+
+function handleGridKeydown(e) {
+    if (!STATE.selectedCell || STATE.editingCell) return;
+    const { r, c } = STATE.selectedCell;
+
+    const moveTo = (nextR, nextC) => {
+        const td = document.querySelector(`.data-cell[data-row="${nextR}"][data-col="${nextC}"]`);
+        if (!td) return;
+        selectCell(nextR, nextC, td);
+        td.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    };
+
+    if (e.key === 'ArrowRight') { e.preventDefault(); moveTo(r, c + 1); return; }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); moveTo(r, Math.max(0, c - 1)); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); moveTo(r + 1, c); return; }
+    if (e.key === 'ArrowUp') { e.preventDefault(); moveTo(Math.max(0, r - 1), c); return; }
+    if (e.key === 'Tab') { e.preventDefault(); moveTo(r, e.shiftKey ? Math.max(0, c - 1) : c + 1); return; }
+    if (e.key === 'Enter') { e.preventDefault(); moveTo(e.shiftKey ? Math.max(0, r - 1) : r + 1, c); return; }
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        const td = document.querySelector(`.data-cell[data-row="${r}"][data-col="${c}"]`);
+        if (td) applyCellValue(r, c, td, '');
+        return;
+    }
+    if (e.key === 'F2' || (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey)) {
+        const td = document.querySelector(`.data-cell[data-row="${r}"][data-col="${c}"]`);
+        if (td) {
+            startEditing(r, c, td);
+            if (e.key.length === 1 && e.key !== 'F2') {
+                const input = td.querySelector('.cell-editor');
+                if (input) {
+                    input.value = e.key;
+                    document.getElementById('formulaInput').value = e.key;
+                }
+            }
+        }
+    }
+}
+
+function setupFormulaBar() {
+    const input = document.getElementById('formulaInput');
+    input.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        if (!STATE.isExcelMode || !STATE.selectedCell) return;
+        e.preventDefault();
+        if (STATE.editingCell) finishEditing();
+        const { r, c } = STATE.selectedCell;
+        const td = document.querySelector(`.data-cell[data-row="${r}"][data-col="${c}"]`);
+        if (!td) return;
+        applyCellValue(r, c, td, input.value);
+        td.classList.add('selected');
+    });
+    input.addEventListener('focus', () => {
+        if (!STATE.isExcelMode) input.blur();
+    });
+}
+
+// ================================================================
+// DB EDITOR (fallback mode)
+// ================================================================
+function renderDbEditor() {
+    const container = document.getElementById('gridContent');
+    container.innerHTML = '';
+    
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'overflow:auto;height:100%';
+    
+    if (STATE.dbRows.length === 0) {
+        wrapper.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-table"></i></div><h4>Belum ada transaksi</h4><p>Klik "Tambah Baris" untuk memulai.</p></div>';
+    } else {
+        const table = document.createElement('table');
+        table.className = 'db-editor-table';
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="width:40px">#</th>
+                    <th style="width:110px">Tanggal</th>
+                    <th>Keterangan / Uraian</th>
+                    <th style="width:120px">Kategori</th>
+                    <th style="width:120px;text-align:right">Debit (Rp)</th>
+                    <th style="width:120px;text-align:right">Kredit (Rp)</th>
+                    <th style="width:50px;text-align:center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="dbEditorBody"></tbody>`;
+        wrapper.appendChild(table);
+    }
+    
+    container.appendChild(wrapper);
+    if (STATE.dbRows.length > 0) renderDbRows();
+}
+
+function renderDbRows() {
+    const tbody = document.getElementById('dbEditorBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    STATE.dbRows.forEach((r, idx) => {
+        let dateVal = '';
+        if (r.tanggal) {
+            const d = new Date(r.tanggal);
+            if (!isNaN(d.getTime())) {
+                dateVal = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
+        }
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="text-align:center;color:var(--text-muted);font-size:11px;padding:6px 4px">${idx+1}</td>
+            <td><input type="date" value="${dateVal}" onchange="updateDbRow(${idx},'tanggal',this.value)"></td>
+            <td><input type="text" value="${r.keterangan || ''}" placeholder="Tulis keterangan..." onchange="updateDbRow(${idx},'keterangan',this.value)"></td>
+            <td><input type="text" value="${r.kategori || ''}" placeholder="Dana Jemaat" onchange="updateDbRow(${idx},'kategori',this.value)"></td>
+            <td><input type="number" value="${r.debit || 0}" style="text-align:right" onchange="updateDbRow(${idx},'debit',this.value)"></td>
+            <td><input type="number" value="${r.kredit || 0}" style="text-align:right" onchange="updateDbRow(${idx},'kredit',this.value)"></td>
+            <td style="text-align:center">
+                <button onclick="deleteDbRow(${idx})" style="background:none;border:none;color:var(--rose);cursor:pointer;padding:4px 6px" title="Hapus">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateDbRow(idx, field, val) {
+    if (field === 'debit' || field === 'kredit') {
+        STATE.dbRows[idx][field] = parseFloat(val) || 0;
+    } else {
+        STATE.dbRows[idx][field] = val;
+    }
+    STATE.isDirty = true;
+    recalcNeracaFooter();
+}
+
+function addDbRow() {
+    const today = new Date().toISOString().split('T')[0];
+    STATE.dbRows.push({ tanggal: today, keterangan: '', kategori: 'Dana Jemaat', debit: 0, kredit: 0 });
+    STATE.isDirty = true;
+    renderDbEditor();
+    recalcNeracaFooter();
+    // Scroll to bottom
+    setTimeout(() => {
+        const tbody = document.getElementById('dbEditorBody');
+        if (tbody) tbody.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+}
+
+function deleteDbRow(idx) {
+    STATE.dbRows.splice(idx, 1);
+    STATE.isDirty = true;
+    renderDbRows();
+    recalcNeracaFooter();
+}
+
+function recalcNeracaFooter() {
+    let d = 0, k = 0;
+    STATE.dbRows.forEach(r => { d += parseFloat(r.debit)||0; k += parseFloat(r.kredit)||0; });
+    const sel = d - k;
+    document.getElementById('ftDebit').textContent = formatRp(d);
+    document.getElementById('ftKredit').textContent = formatRp(k);
+    const selEl = document.getElementById('ftSelisih');
+    selEl.textContent = formatRp(sel) + (sel === 0 ? ' ✓' : ' !');
+    selEl.style.color = sel === 0 ? 'var(--emerald)' : 'var(--rose)';
+}
+
+// ================================================================
+// SAVE
+// ================================================================
+async function saveCurrentSheet() {
+    if (!STATE.activeReportId) return;
+    
+    if (STATE.editingCell) finishEditing();
+    
+    const btn = document.getElementById('btnSaveSheet');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+    
+    try {
+        let res, result;
+        
+        if (STATE.isExcelMode) {
+            // Save sheet data to Excel file
+            res = await fetch(`/api/report/${STATE.activeReportId}/sheet/${encodeURIComponent(STATE.activeSheetName)}/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: STATE.gridData })
+            });
+        } else {
+            // Save DB rows
+            res = await fetch(`/api/report/${STATE.activeReportId}/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rows: STATE.dbRows })
+            });
+        }
+        
+        result = await res.json();
+        if (res.ok) {
+            toast(result.message, 'success');
+            STATE.isDirty = false;
+            await loadFiles();
+        } else {
+            toast(result.message || 'Gagal menyimpan', 'error');
+        }
+    } catch(e) {
+        toast('Kesalahan: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan';
+    }
+}
+
+// ================================================================
+// EXPORT EXCEL
+// ================================================================
+function exportCurrentExcel() {
+    if (STATE.editingCell) finishEditing();
+
+    if (STATE.isDirty) {
+        toast('Simpan perubahan dulu sebelum ekspor Excel.', 'info');
+        return;
+    }
+
+    if (STATE.isExcelMode && STATE.activeReportId) {
+        window.location.href = `/api/report/${STATE.activeReportId}/download`;
+        toast('Mengunduh file Excel fisik...', 'success');
+        return;
+    }
+
+    const wb = XLSX.utils.book_new();
+    if (!STATE.isExcelMode && STATE.dbRows.length > 0) {
+        const header = ['Tanggal', 'Keterangan', 'Kategori', 'Debit (Rp)', 'Kredit (Rp)'];
+        const rows = STATE.dbRows.map(r => [r.tanggal, r.keterangan, r.kategori, r.debit, r.kredit]);
+        const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+        XLSX.utils.book_append_sheet(wb, ws, 'Data Transaksi');
+        const filename = `${document.getElementById('sheetModalTitle').textContent}_Data Transaksi.xlsx`;
+        XLSX.writeFile(wb, filename.replace(/[<>:"/\\|?*]/g, '_'));
+        toast('File Excel berhasil diunduh!', 'success');
+        return;
+    }
+
+    toast('Tidak ada data untuk diekspor', 'error');
+}
+
+// ================================================================
+// EXPORT PDF
+// ================================================================
+function exportCurrentPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm' });
+    
+    const title = document.getElementById('sheetModalTitle').textContent;
+    const subtitle = document.getElementById('sheetModalSubtitle').textContent;
+    
+    doc.setFillColor(17, 24, 39);
+    doc.rect(0, 0, 297, 30, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('GMAHK JAKARTA CONFERENCE', 148, 12, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(title, 148, 20, { align: 'center' });
+    if (subtitle) doc.text(subtitle, 148, 26, { align: 'center' });
+    
+    let tableData = [];
+    let tableHead = [];
+    
+    if (STATE.isExcelMode && STATE.gridData.length > 0) {
+        tableHead = [STATE.gridData[0] ? STATE.gridData[0].map(c => String(c || '')) : []];
+        tableData = STATE.gridData.slice(1).map(row => (row || []).map(c => String(c || '')));
+    } else if (!STATE.isExcelMode && STATE.dbRows.length > 0) {
+        tableHead = [['Tanggal', 'Keterangan', 'Kategori', 'Debit (Rp)', 'Kredit (Rp)']];
+        tableData = STATE.dbRows.map(r => [r.tanggal || '', r.keterangan || '', r.kategori || '', formatRp(r.debit), formatRp(r.kredit)]);
+    }
+    
+    if (tableData.length > 0) {
+        doc.autoTable({
+            head: tableHead,
+            body: tableData,
+            startY: 34,
+            styles: { fontSize: 7, cellPadding: 2 },
+            headStyles: { fillColor: [30, 58, 138], textColor: [255,255,255], fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: [20, 27, 45] },
+            bodyStyles: { textColor: [220, 230, 255] },
+        });
+    }
+    
+    const filename = `${title}_${STATE.activeSheetName || 'export'}.pdf`.replace(/[<>:"/\\|?*]/g, '_');
+    doc.save(filename);
+    toast('PDF berhasil diunduh!', 'success');
+}
+
+// ================================================================
+// AUDIT TERPERINCI
+// ================================================================
+async function triggerDeepAudit() {
+    if (!STATE.activeReportId) return;
+    
+    const content = document.getElementById('auditContent');
+    content.innerHTML = `<div style="text-align:center;padding:32px 16px"><div class="spinner" style="margin:0 auto 12px"></div><p style="font-size:11px;color:var(--text-muted)">Menganalisis laporan...</p></div>`;
+    
+    try {
+        const res = await fetch(`/api/report/${STATE.activeReportId}/audit-deep`);
+        const data = await res.json();
+        if (!res.ok) { toast(data.message, 'error'); return; }
+        
+        // Score color
+        const scoreColor = data.score >= 90 ? 'var(--emerald)' : data.score >= 75 ? '#2dd4bf' : data.score >= 60 ? 'var(--amber)' : data.score >= 45 ? '#fb923c' : 'var(--rose)';
+        const scoreBorder = scoreColor;
+        
+        // Format summary
+        const formattedSummary = data.summary
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/^\* (.*)$/gm, '<li style="margin-left:12px;list-style:disc;color:var(--text-secondary);margin-top:4px">$1</li>')
+            .replace(/^\d+\. (.*)$/gm, '<li style="margin-left:12px;list-style:decimal;color:var(--text-secondary);margin-top:4px">$1</li>')
+            .replace(/\n/g, '<br>');
+        
+        let findingsHTML = '';
+        if (data.findings.length === 0) {
+            findingsHTML = `<div style="text-align:center;padding:16px;color:var(--emerald);font-size:12px"><i class="fa-solid fa-circle-check" style="font-size:24px;margin-bottom:8px;display:block"></i>Tidak ada temuan!</div>`;
+        } else {
+            data.findings.forEach(f => {
+                const icons = { danger: 'fa-circle-xmark', warning: 'fa-triangle-exclamation', info: 'fa-circle-info' };
+                const ic = { danger: 'var(--rose)', warning: 'var(--amber)', info: 'var(--accent-light)' };
+                findingsHTML += `
+                    <div class="finding-card ${f.severity}">
+                        <div class="finding-title"><i class="fa-solid ${icons[f.severity]||icons.info}" style="color:${ic[f.severity]||ic.info}"></i>${f.title}</div>
+                        <div class="finding-msg">${f.message}</div>
+                        <div class="finding-rec"><span style="font-weight:700;color:var(--text-secondary)">Solusi: </span>${f.recommendation}</div>
+                    </div>`;
+            });
+        }
+        
+        content.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:12px">
+                <div class="score-circle" style="border-color:${scoreBorder};box-shadow:0 0 20px ${scoreBorder}22;color:${scoreColor}">${data.score}</div>
+                <div>
+                    <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Skor Kepatuhan</div>
+                    <div style="font-size:12px;font-weight:700;color:${scoreColor}">${data.verdict}</div>
+                    ${data.namaJemaat ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px">${capitalize(data.namaJemaat)} · ${data.tahunLaporan||'-'}</div>` : ''}
+                </div>
+            </div>
+            <div style="margin-bottom:12px">
+                <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700">Ringkasan Eksekutif</div>
+                <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:10px;max-height:160px;overflow-y:auto">${formattedSummary}</div>
+            </div>
+            <div>
+                <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700">Temuan &amp; Solusi (${data.findings.length})</div>
+                <div style="max-height:300px;overflow-y:auto">${findingsHTML}</div>
+            </div>`;
+        
+        toast('Audit selesai — skor ' + data.score + '/100', data.score >= 75 ? 'success' : 'info');
+        
+    } catch(e) {
+        content.innerHTML = `<div style="text-align:center;padding:32px;color:var(--rose)"><i class="fa-solid fa-triangle-exclamation" style="font-size:24px;display:block;margin-bottom:8px"></i>${e.message}</div>`;
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{
+  "services": {
+    "CoAuthoring": {
+      "token": {
+        "enable": {
+          "request": {
+            "inbox": false,
+            "outbox": false
+          },
+          "browser": false
+        },
+        "inbox": {
+          "header": "Authorization",
+          "inBody": false
+        },
+        "outbox": {
+          "header": "Authorization",
+          "inBody": false
+        }
+      },
+      "secret": {
+        "browser": {
+          "string": "oOzxFw4LyXi2roH8Z4OgBO6ZQ8Nks5va"
+        },
+        "inbox": {
+          "string": "oOzxFw4LyXi2roH8Z4OgBO6ZQ8Nks5va"
+        },
+        "outbox": {
+          "string": "oOzxFw4LyXi2roH8Z4OgBO6ZQ8Nks5va"
+        },
+        "session": {
+          "string": "oOzxFw4LyXi2roH8Z4OgBO6ZQ8Nks5va"
+        }
+      },
+      "request-filtering-agent": {
+        "allowPrivateIPAddress": true,
+        "allowMetaIPAddress": true
+      }
+    }
+  },
+  "wopi": {
+    "enable": false,
+    "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC9xpVBiKhBf+5M\n5nr+WxYwMvDn5lPuCZ7rs56N7F28+7Hx1+WVVp9nYCLjvQcj/N/2+yLMCoVKM+L0\nC/+JYWvLL+RR8eoCSsohunP10IEA44GgWyr2d+tDofJEmkX7MEWTgYqdFhT2Et96\ncslc+XgW7tephOC4lQk7m1rLGVu15JZuciHtAp50bL+bSEr9iPAtLtm7tXUocTPf\n4ouIUAgYNLY1RPGwhZ0DPpLHGL7eRcIPYh2okAgRPZ6YDLgGjsgq3UZNs0Mn8vdf\n42ft0FaZ/TR6mSSFUPkOqfM56JQVMIefNudDMFjRMx9vodu4zDkjtkXxOH2e8UVV\nqC0Kz0q/AgMBAAECggEAAIM1yfyFf8/Jo/mHYYJ7d9vbXLT5iw4JmNdeWUHHKwh+\n/Yk4vIOEYLIYxgavq0A2lqMs/+ITZBTpywDxSryxntXdRv9hQ2pSS28GeyZ6Area\nlQVKA2plf0RDtD26bKg/t9tEtZHmspdwdRM0SgT+dwlkGbgbJ0R3xupvf1btMXuQ\nX6NlGM5z7zqR3KXNW/ryMEL86p/YlQ+yirmmYTHzUd1+dhGMGocFM8xbEXWaq9mM\nFiOVWjWf9Q5w79k/NBwCPfgX7xsYj/SnXnv1wBKSeW2XAQSihl4ZGWRa0xRE/uyK\nbB2/S8hAgHeipS062kJOfecdN9BHKGdCmL5vPjsvYQKBgQDenHRgmfsFhTu3ljwp\nyE6mwBwbv4unoxM4nMX4axgQY9PU5bhSJZFe2K8sXMEuaTuJECN3sptowwRJ0wt2\nFSmKak4BHXX12kTPyTcgPmyK6mkEpe5e+mETqogOCL0wuGeLbmM8k0Uto1VPC3dF\nvqo+HlcKDmf/DgcRqfmNi5sRjwKBgQDaPVq0BCIBh8XfNUMUgXEAzysSbsRCzrms\njJjOoz/mnYGsbejwbdknSZJ8YLEML0zYjAQVoKe5zOyveBVuQ4dx2hu0RHHZhcZF\nwwiBfb+R1RctgU1r3exUDLI3AU391vJtgCEsF0L72zo3WjkBvppi2o1XeIPhYJTe\nVNt6YDY70QKBgQCSEcE/XepbzffIWDk0BW6udiI7hu1hW10SabRxc/w/TPHDodTX\nejUwMiiHiHluNbjOEBvlv/m/vS9ELco4elxeqbBzhNxRLR635UVZz/wzDutIFIUc\nJ1ipqd1KsCtMG8Q9tnpBVjUvZBxnGJPz3M8ioY/lVlyg/Jhg29KXMULYOwKBgHA9\nB633Rin1Uu2FrfcYzy40XZmAQA1/1fwI3vm++bk4Hh249QjZ5cmPy/eNnuB+Xw4r\njFo3Iquq2bswjg0ES99g5cijPs45P4xXTsOSEXkF14K+sjucidN8KBej4yF+b3Wj\nZOwRFpEC4YDgNNtR1IKsle57e4/opQdnKu1YF+xRAoGAeflyX6/p0DtmmJXAzdTJ\n9VPIBePJnCQPJz6L9J5akM+BPWpKnM3tvOBVWllJlyBuabyIfF2svhInEO5ytIgC\nQn86IIAZycGfCd4oaWlNI0afDltbhHsXRZRFvoBg+NSX7StfiIP7YO0u9H3BV1Je\npGCRs8ExxidQfty6K7b1B0k=\n-----END PRIVATE KEY-----\n",
+    "privateKeyOld": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC9xpVBiKhBf+5M\n5nr+WxYwMvDn5lPuCZ7rs56N7F28+7Hx1+WVVp9nYCLjvQcj/N/2+yLMCoVKM+L0\nC/+JYWvLL+RR8eoCSsohunP10IEA44GgWyr2d+tDofJEmkX7MEWTgYqdFhT2Et96\ncslc+XgW7tephOC4lQk7m1rLGVu15JZuciHtAp50bL+bSEr9iPAtLtm7tXUocTPf\n4ouIUAgYNLY1RPGwhZ0DPpLHGL7eRcIPYh2okAgRPZ6YDLgGjsgq3UZNs0Mn8vdf\n42ft0FaZ/TR6mSSFUPkOqfM56JQVMIefNudDMFjRMx9vodu4zDkjtkXxOH2e8UVV\nqC0Kz0q/AgMBAAECggEAAIM1yfyFf8/Jo/mHYYJ7d9vbXLT5iw4JmNdeWUHHKwh+\n/Yk4vIOEYLIYxgavq0A2lqMs/+ITZBTpywDxSryxntXdRv9hQ2pSS28GeyZ6Area\nlQVKA2plf0RDtD26bKg/t9tEtZHmspdwdRM0SgT+dwlkGbgbJ0R3xupvf1btMXuQ\nX6NlGM5z7zqR3KXNW/ryMEL86p/YlQ+yirmmYTHzUd1+dhGMGocFM8xbEXWaq9mM\nFiOVWjWf9Q5w79k/NBwCPfgX7xsYj/SnXnv1wBKSeW2XAQSihl4ZGWRa0xRE/uyK\nbB2/S8hAgHeipS062kJOfecdN9BHKGdCmL5vPjsvYQKBgQDenHRgmfsFhTu3ljwp\nyE6mwBwbv4unoxM4nMX4axgQY9PU5bhSJZFe2K8sXMEuaTuJECN3sptowwRJ0wt2\nFSmKak4BHXX12kTPyTcgPmyK6mkEpe5e+mETqogOCL0wuGeLbmM8k0Uto1VPC3dF\nvqo+HlcKDmf/DgcRqfmNi5sRjwKBgQDaPVq0BCIBh8XfNUMUgXEAzysSbsRCzrms\njJjOoz/mnYGsbejwbdknSZJ8YLEML0zYjAQVoKe5zOyveBVuQ4dx2hu0RHHZhcZF\nwwiBfb+R1RctgU1r3exUDLI3AU391vJtgCEsF0L72zo3WjkBvppi2o1XeIPhYJTe\nVNt6YDY70QKBgQCSEcE/XepbzffIWDk0BW6udiI7hu1hW10SabRxc/w/TPHDodTX\nejUwMiiHiHluNbjOEBvlv/m/vS9ELco4elxeqbBzhNxRLR635UVZz/wzDutIFIUc\nJ1ipqd1KsCtMG8Q9tnpBVjUvZBxnGJPz3M8ioY/lVlyg/Jhg29KXMULYOwKBgHA9\nB633Rin1Uu2FrfcYzy40XZmAQA1/1fwI3vm++bk4Hh249QjZ5cmPy/eNnuB+Xw4r\njFo3Iquq2bswjg0ES99g5cijPs45P4xXTsOSEXkF14K+sjucidN8KBej4yF+b3Wj\nZOwRFpEC4YDgNNtR1IKsle57e4/opQdnKu1YF+xRAoGAeflyX6/p0DtmmJXAzdTJ\n9VPIBePJnCQPJz6L9J5akM+BPWpKnM3tvOBVWllJlyBuabyIfF2svhInEO5ytIgC\nQn86IIAZycGfCd4oaWlNI0afDltbhHsXRZRFvoBg+NSX7StfiIP7YO0u9H3BV1Je\npGCRs8ExxidQfty6K7b1B0k=\n-----END PRIVATE KEY-----\n",
+    "publicKey": "BgIAAACkAABSU0ExAAgAAAEAAQC/Ss8KLahVRfGefTjxRbYjOcy426FvHzPRWDBD5zafhzAVlOg586kO+VCFJJl6NP2ZVtDtZ+Nf9/InQ7NNRt0qyI4GuAyYnj0RCJCoHWIPwkXevhjHkj4DnYWw8UQ1tjQYCFCIi+LfM3EodbW72S4t8Ij9Skibv2x0ngLtIXJuluS1WxnLWps7CZW44ISp1+4WePlcyXJ63xL2FBadioGTRTD7RZpE8qFD63f2KluggeMAgdD1c7ohykoC6vFR5C/La2GJ/wv04jNKhQrMIvv23/wjB73jImBnn1aV5dfxsfu8XeyNnrPrngnuU+bn8DIwFlv+euZM7n9BqIhBlca9",
+    "publicKeyOld": "BgIAAACkAABSU0ExAAgAAAEAAQC/Ss8KLahVRfGefTjxRbYjOcy426FvHzPRWDBD5zafhzAVlOg586kO+VCFJJl6NP2ZVtDtZ+Nf9/InQ7NNRt0qyI4GuAyYnj0RCJCoHWIPwkXevhjHkj4DnYWw8UQ1tjQYCFCIi+LfM3EodbW72S4t8Ij9Skibv2x0ngLtIXJuluS1WxnLWps7CZW44ISp1+4WePlcyXJ63xL2FBadioGTRTD7RZpE8qFD63f2KluggeMAgdD1c7ohykoC6vFR5C/La2GJ/wv04jNKhQrMIvv23/wjB73jImBnn1aV5dfxsfu8XeyNnrPrngnuU+bn8DIwFlv+euZM7n9BqIhBlca9",
+    "modulus": "vcaVQYioQX/uTOZ6/lsWMDLw5+ZT7gme67OejexdvPux8dfllVafZ2Ai470HI/zf9vsizAqFSjPi9Av/iWFryy/kUfHqAkrKIbpz9dCBAOOBoFsq9nfrQ6HyRJpF+zBFk4GKnRYU9hLfenLJXPl4Fu7XqYTguJUJO5tayxlbteSWbnIh7QKedGy/m0hK/YjwLS7Zu7V1KHEz3+KLiFAIGDS2NUTxsIWdAz6Sxxi+3kXCD2IdqJAIET2emAy4Bo7IKt1GTbNDJ/L3X+Nn7dBWmf00epkkhVD5DqnzOeiUFTCHnzbnQzBY0TMfb6HbuMw5I7ZF8Th9nvFFVagtCs9Kvw==",
+    "modulusOld": "vcaVQYioQX/uTOZ6/lsWMDLw5+ZT7gme67OejexdvPux8dfllVafZ2Ai470HI/zf9vsizAqFSjPi9Av/iWFryy/kUfHqAkrKIbpz9dCBAOOBoFsq9nfrQ6HyRJpF+zBFk4GKnRYU9hLfenLJXPl4Fu7XqYTguJUJO5tayxlbteSWbnIh7QKedGy/m0hK/YjwLS7Zu7V1KHEz3+KLiFAIGDS2NUTxsIWdAz6Sxxi+3kXCD2IdqJAIET2emAy4Bo7IKt1GTbNDJ/L3X+Nn7dBWmf00epkkhVD5DqnzOeiUFTCHnzbnQzBY0TMfb6HbuMw5I7ZF8Th9nvFFVagtCs9Kvw==",
+    "exponent": 65537,
+    "exponentOld": 65537
+  },
+  "storage": {
+    "fs": {
+      "secretString": "EBHtjgcuX3j2svOGUrEC"
+    }
+  }
+}
